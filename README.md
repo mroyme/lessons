@@ -31,10 +31,24 @@ Start at [`containers-101/index.html`](containers-101/v1/index.html), or read th
 
 ## How to view
 
-The site is published to GitHub Pages from `main`:
-**<https://mroyme.github.io/lessons/>**
+The site is published to GitHub Pages from `main`. A custom domain is configured in
+the repository's Pages settings: **<http://lessons.mroy.me/>**
 
-To work with it locally instead:
+> **DNS is not yet pointing at GitHub.** `lessons.mroy.me` currently returns NXDOMAIN,
+> and because the custom domain is set, `mroyme.github.io/lessons/` 301-redirects to
+> it — so the site is unreachable until the record exists. In the DNS provider for
+> `mroy.me` (currently Cloudflare), add:
+>
+> ```
+> lessons   CNAME   mroyme.github.io
+> ```
+>
+> Keep the record **DNS-only** rather than proxied, so GitHub can complete its TLS
+> challenge; then enable **Enforce HTTPS** in Settings → Pages once the certificate is
+> issued. Removing the custom domain in Settings → Pages instead restores
+> `https://mroyme.github.io/lessons/`.
+
+To work with it locally:
 
 ```bash
 git clone git@github.com:mroyme/lessons.git
