@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lessons — teaching material for engineers</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f7f8fa;
+    --panel: #ffffff;
+    --ink: #16181d;
+    --muted: #5c6371;
+    --line: #dfe3ea;
+    --accent: #2496ed;
+    --accent-soft: rgba(36, 150, 237, 0.12);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e1116;
+      --panel: #161b22;
+      --ink: #e6e9ef;
+      --muted: #9aa4b2;
+      --line: #262c36;
+      --accent: #58a6ff;
+      --accent-soft: rgba(88, 166, 255, 0.14);
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 48px 24px 64px;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  main { max-width: 980px; margin: 0 auto; }
+  h1 { font-size: 1.9rem; margin: 0 0 6px; letter-spacing: -0.01em; }
+  .purpose { color: var(--muted); margin: 0 0 36px; font-size: 1.02rem; }
+  h2.section {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 650;
+    margin: 0 0 14px;
+  }
+  ul.courses { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+  li.course {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px 22px;
+  }
+  .course-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  .course-title { margin: 0; font-size: 1.15rem; font-weight: 650; }
+  .course-title a { color: var(--ink); text-decoration: none; }
+  .course-title a:hover, .course-title a:focus { color: var(--accent); text-decoration: underline; }
+  .badge {
+    font-size: 0.72rem;
+    font-weight: 650;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-radius: 999px;
+    padding: 3px 9px;
+    white-space: nowrap;
+  }
+  .blurb { margin: 0; color: var(--muted); font-size: 0.96rem; }
+  .meta {
+    margin: 12px 0 0;
+    color: var(--muted);
+    font-size: 0.86rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .meta span + span::before { content: " · "; }
+  .topics { margin: 12px 0 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .topic {
+    font-size: 0.8rem;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 2px 8px;
+  }
+  .links { margin: 16px 0 0; font-size: 0.88rem; }
+  .links a {
+    color: var(--accent);
+    text-decoration: none;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 4px 12px;
+    margin-right: 8px;
+    display: inline-block;
+  }
+  .links a:hover, .links a:focus { border-color: var(--accent); }
+  .links a.primary {
+    background: var(--accent-soft);
+    border-color: transparent;
+    font-weight: 600;
+  }
+  .links a.primary:hover, .links a.primary:focus { border-color: var(--accent); }
+  footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  footer p { margin: 0 0 10px; }
+  footer p:last-child { margin-bottom: 0; }
+  footer code {
+    background: var(--accent-soft);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 0.86rem;
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Lessons</h1>
+  <p class="purpose">Diagram-led teaching material for engineers. Each course is a self-contained folder of interactive diagrams plus the talk track for delivering them to a room.</p>
+
+  <h2 class="section">Courses</h2>
+  <ul class="courses">
+    <li class="course">
+      <div class="course-head">
+        <h3 class="course-title"><a href="containers-101/v1/index.html">Containers 101 — Docker, ECS and EKS</a></h3>
+        <span class="badge">Ready</span>
+      </div>
+      <p class="blurb">From &ldquo;what actually runs when I type <code>docker run</code>&rdquo; to choosing an AWS compute mode on purpose. Covers the Docker runtime chain, the container lifecycle, the ECS control plane and all five of its compute modes, Amazon EKS, and a decision guide that makes the choice mechanical.</p>
+      <p class="meta">
+        <span>6 diagrams</span>
+        <span>~60 min</span>
+        <span>Mixed experience — no prior AWS needed</span>
+        <span><code>containers-101/v1/</code></span>
+      </p>
+      <p class="topics">
+        <span class="topic">Docker</span>
+        <span class="topic">Amazon ECS</span>
+        <span class="topic">AWS Fargate</span>
+        <span class="topic">ECS Anywhere</span>
+        <span class="topic">Amazon EKS</span>
+        <span class="topic">Kubernetes</span>
+      </p>
+      <p class="links">
+        <a class="primary" href="containers-101/v1/index.html">Start course</a>
+        <a href="containers-101/v1/README.md">Agenda &amp; sources</a>
+        <a href="containers-101/v1/06-compute-decision-guide.html">Jump to decision guide</a>
+      </p>
+    </li>
+  </ul>
+
+  <footer>
+    <p>Every diagram is a single self-contained HTML file &mdash; dark/light toggle, pan and zoom, search, focus and relationship tracing, and truthful export. Nothing loads from the network, so the whole set works offline and on a locked-down conference laptop.</p>
+    <p>Each course is a folder, and versions live inside it &mdash; this one is <code>containers-101/v1/</code> &mdash; so every course versions on its own schedule and a link you share today keeps showing what it showed today. A version folder holds an <code>index.html</code> entry point, a <code>README.md</code> agenda, rendered diagrams, the <code>specs/</code> they were generated from, and <code>notes/</code> holding the talk track. Every path inside is relative, so a version can be copied to create the next one without a single link rewrite.</p>
+  </footer>
+</main>
+</body>
+</html>

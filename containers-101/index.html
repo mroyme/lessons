@@ -3,141 +3,39 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Containers 101 — Docker, ECS and EKS</title>
+<meta http-equiv="refresh" content="0; url=v1/index.html">
+<link rel="canonical" href="v1/index.html">
+<title>Containers 101 — current version</title>
 <style>
   :root {
     color-scheme: light dark;
     --bg: #f7f8fa;
-    --panel: #ffffff;
     --ink: #16181d;
     --muted: #5c6371;
-    --line: #dfe3ea;
     --accent: #2496ed;
-    --accent-soft: rgba(36, 150, 237, 0.12);
   }
   @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #0e1116;
-      --panel: #161b22;
-      --ink: #e6e9ef;
-      --muted: #9aa4b2;
-      --line: #262c36;
-      --accent: #58a6ff;
-      --accent-soft: rgba(88, 166, 255, 0.14);
-    }
+    :root { --bg: #0e1116; --ink: #e6e9ef; --muted: #9aa4b2; --accent: #58a6ff; }
   }
-  * { box-sizing: border-box; }
   body {
     margin: 0;
-    padding: 48px 24px 64px;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 24px;
     background: var(--bg);
     color: var(--ink);
     font: 16px/1.55 ui-sans-serif, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    text-align: center;
   }
-  main { max-width: 980px; margin: 0 auto; }
-  h1 { font-size: 1.9rem; margin: 0 0 6px; letter-spacing: -0.01em; }
-  .purpose { color: var(--muted); margin: 0 0 36px; font-size: 1.02rem; }
-  ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
-  li {
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 18px 20px;
-    display: grid;
-    grid-template-columns: 44px 1fr;
-    gap: 4px 16px;
-    align-items: start;
-  }
-  .num {
-    grid-row: 1 / span 3;
-    display: grid;
-    place-items: center;
-    width: 36px; height: 36px;
-    border-radius: 9px;
-    background: var(--accent-soft);
-    color: var(--accent);
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-  }
-  .title { margin: 0; font-size: 1.08rem; font-weight: 650; }
-  .title a { color: var(--ink); text-decoration: none; }
-  .title a:hover, .title a:focus { color: var(--accent); text-decoration: underline; }
-  .blurb { margin: 2px 0 0; color: var(--muted); font-size: 0.95rem; }
-  .blurb em { color: var(--ink); font-style: normal; font-weight: 600; }
-  .links { margin: 8px 0 0; font-size: 0.88rem; }
-  .links a {
-    color: var(--accent);
-    text-decoration: none;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    padding: 3px 11px;
-    margin-right: 8px;
-    display: inline-block;
-  }
-  .links a:hover, .links a:focus { border-color: var(--accent); }
-  footer {
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px solid var(--line);
-    color: var(--muted);
-    font-size: 0.9rem;
-  }
-  footer code {
-    background: var(--accent-soft);
-    border-radius: 4px;
-    padding: 1px 5px;
-    font-size: 0.86rem;
-  }
+  p { margin: 0 0 10px; color: var(--muted); }
+  a { color: var(--accent); }
 </style>
 </head>
 <body>
 <main>
-  <h1>Containers 101 — Docker, ECS and EKS</h1>
-  <p class="purpose">Six diagrams that take a room from &ldquo;what is a container&rdquo; to picking a compute mode on purpose. Work through them in order.</p>
-
-  <ol>
-    <li>
-      <span class="num">1</span>
-      <h2 class="title"><a href="01-docker-platform.html">How a container actually runs</a></h2>
-      <p class="blurb"><em>Docker platform.</em> The CLI, <code>dockerd</code>, <code>containerd</code>, <code>runc</code>, and the kernel features that do the isolating.</p>
-      <p class="links"><a href="01-docker-platform.html">Open diagram</a><a href="notes/01-docker-platform.md">Speaker notes</a></p>
-    </li>
-    <li>
-      <span class="num">2</span>
-      <h2 class="title"><a href="02-docker-lifecycle.html">From Dockerfile to a dead container</a></h2>
-      <p class="blurb"><em>Container lifecycle.</em> Created, running, paused, exited, OOMKilled, removed &mdash; and why an exited container still costs you disk.</p>
-      <p class="links"><a href="02-docker-lifecycle.html">Open diagram</a><a href="notes/02-docker-lifecycle.md">Speaker notes</a></p>
-    </li>
-    <li>
-      <span class="num">3</span>
-      <h2 class="title"><a href="03-ecs-control-plane.html">One control plane, five places to run</a></h2>
-      <p class="blurb"><em>Amazon ECS.</em> Task definitions, services, and the AWS-managed scheduler that fans work out to five compute modes.</p>
-      <p class="links"><a href="03-ecs-control-plane.html">Open diagram</a><a href="notes/03-ecs-control-plane.md">Speaker notes</a></p>
-    </li>
-    <li>
-      <span class="num">4</span>
-      <h2 class="title"><a href="04-ecs-compute-modes.html">Who manages what</a></h2>
-      <p class="blurb"><em>ECS compute modes.</em> Express Mode, Fargate, Managed Instances, ECS on EC2 and ECS Anywhere, side by side.</p>
-      <p class="links"><a href="04-ecs-compute-modes.html">Open diagram</a><a href="notes/04-ecs-compute-modes.md">Speaker notes</a></p>
-    </li>
-    <li>
-      <span class="num">5</span>
-      <h2 class="title"><a href="05-eks-architecture.html">Managed Kubernetes, your data plane</a></h2>
-      <p class="blurb"><em>Amazon EKS.</em> The control-plane split, how you get nodes, the VPC CNI, and how pods get AWS credentials.</p>
-      <p class="links"><a href="05-eks-architecture.html">Open diagram</a><a href="notes/05-eks-architecture.md">Speaker notes</a></p>
-    </li>
-    <li>
-      <span class="num">6</span>
-      <h2 class="title"><a href="06-compute-decision-guide.html">Which compute should this container use?</a></h2>
-      <p class="blurb"><em>Decision guide.</em> Five questions, six answers. Use it as the closing exercise.</p>
-      <p class="links"><a href="06-compute-decision-guide.html">Open diagram</a><a href="notes/06-compute-decision-guide.md">Speaker notes</a></p>
-    </li>
-  </ol>
-
-  <footer>
-    Every diagram is a single self-contained HTML file with a dark/light toggle, pan and zoom, search, focus and relationship tracing, and truthful export. Nothing loads from the network.
-    The files under <code>notes/</code> are the talk track: hook, walkthrough, the questions you will actually get, and the bridge to the next diagram.
-  </footer>
+  <p>Redirecting to the current version of <strong>Containers 101</strong> (v1)&hellip;</p>
+  <p>If nothing happens, <a href="v1/index.html">open v1 directly</a>.</p>
 </main>
 </body>
 </html>
