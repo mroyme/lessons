@@ -1,0 +1,266 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Which compute should this container use?",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Decision point"
+        },
+        "cloud": {
+          "label": "AWS compute option"
+        },
+        "external": {
+          "label": "Outside AWS"
+        }
+      }
+    }
+  },
+  "lanes": [
+    {
+      "id": "decide",
+      "label": "Walk the questions left to right"
+    },
+    {
+      "id": "offramp",
+      "label": "Leaves ECS compute",
+      "variant": "exception"
+    },
+    {
+      "id": "ecs",
+      "label": "ECS compute mode"
+    }
+  ],
+  "phases": [
+    {
+      "id": "constraints",
+      "label": "Hard constraints",
+      "fromCol": 0,
+      "toCol": 2
+    },
+    {
+      "id": "tradeoffs",
+      "label": "Engineering trade-offs",
+      "fromCol": 3,
+      "toCol": 5,
+      "variant": "emphasis"
+    }
+  ],
+  "mainPath": [
+    "g1",
+    "g2",
+    "g3",
+    "g4",
+    "g5",
+    "ec2"
+  ],
+  "nodes": [
+    {
+      "id": "g1",
+      "lane": "decide",
+      "col": 0,
+      "type": "backend",
+      "label": "Runs outside AWS?",
+      "sublabel": "on-prem or edge",
+      "width": 150,
+      "tag": "start here"
+    },
+    {
+      "id": "g2",
+      "lane": "decide",
+      "col": 1,
+      "type": "backend",
+      "label": "Need Kubernetes?",
+      "sublabel": "CRDs and operators",
+      "width": 150
+    },
+    {
+      "id": "g3",
+      "lane": "decide",
+      "col": 2,
+      "type": "backend",
+      "label": "Plain HTTPS service?",
+      "sublabel": "needs DNS and TLS now",
+      "width": 150
+    },
+    {
+      "id": "g4",
+      "lane": "decide",
+      "col": 3,
+      "type": "backend",
+      "label": "Special hardware?",
+      "sublabel": "GPU, Arm or Spot",
+      "width": 150
+    },
+    {
+      "id": "g5",
+      "lane": "decide",
+      "col": 4,
+      "type": "backend",
+      "label": "Need the host?",
+      "sublabel": "custom AMI or daemons",
+      "width": 150
+    },
+    {
+      "id": "anywhere",
+      "lane": "offramp",
+      "col": 0,
+      "type": "external",
+      "label": "ECS Anywhere",
+      "sublabel": "launchType: EXTERNAL",
+      "width": 150
+    },
+    {
+      "id": "eks",
+      "lane": "offramp",
+      "col": 1,
+      "type": "cloud",
+      "label": "Amazon EKS",
+      "sublabel": "you own the upgrades",
+      "width": 150,
+      "brand": "kubernetes"
+    },
+    {
+      "id": "express",
+      "lane": "ecs",
+      "col": 2,
+      "type": "cloud",
+      "label": "ECS Express Mode",
+      "sublabel": "one call does the wiring",
+      "width": 150
+    },
+    {
+      "id": "fargate",
+      "lane": "ecs",
+      "col": 3,
+      "type": "cloud",
+      "label": "AWS Fargate",
+      "sublabel": "just CPU and memory",
+      "width": 150
+    },
+    {
+      "id": "mi",
+      "lane": "ecs",
+      "col": 4,
+      "type": "cloud",
+      "label": "ECS Managed Instances",
+      "sublabel": "AWS operates the EC2",
+      "width": 150
+    },
+    {
+      "id": "ec2",
+      "lane": "decide",
+      "col": 5,
+      "type": "cloud",
+      "label": "ECS on EC2",
+      "sublabel": "your ASG and AMI",
+      "width": 150
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-g1-yes",
+      "from": "g1",
+      "to": "anywhere",
+      "label": "yes",
+      "variant": "dashed",
+      "role": "branch"
+    },
+    {
+      "id": "e-g1-no",
+      "from": "g1",
+      "to": "g2",
+      "label": "no",
+      "variant": "emphasis",
+      "toSide": "left"
+    },
+    {
+      "id": "e-g2-yes",
+      "from": "g2",
+      "to": "eks",
+      "label": "yes",
+      "variant": "dashed",
+      "role": "branch"
+    },
+    {
+      "id": "e-g2-no",
+      "from": "g2",
+      "to": "g3",
+      "label": "no",
+      "variant": "emphasis",
+      "toSide": "left"
+    },
+    {
+      "id": "e-g3-yes",
+      "from": "g3",
+      "to": "express",
+      "label": "yes",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "e-g3-no",
+      "from": "g3",
+      "to": "g4",
+      "label": "no",
+      "variant": "emphasis",
+      "toSide": "left"
+    },
+    {
+      "id": "e-g4-no",
+      "from": "g4",
+      "to": "fargate",
+      "label": "no",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "e-g4-yes",
+      "from": "g4",
+      "to": "g5",
+      "label": "yes",
+      "variant": "emphasis",
+      "toSide": "left"
+    },
+    {
+      "id": "e-g5-no",
+      "from": "g5",
+      "to": "mi",
+      "label": "no",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "e-g5-yes",
+      "from": "g5",
+      "to": "ec2",
+      "label": "yes",
+      "variant": "emphasis",
+      "role": "branch",
+      "toSide": "left"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Read it left to right",
+      "items": [
+        "The first three questions are constraints, not preferences",
+        "Only the last two are genuine engineering trade-offs",
+        "Most teams stop at Express Mode or Fargate - that is the correct answer"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Cheap to change your mind",
+      "items": [
+        "The task definition is portable across every ECS outcome",
+        "Moving between ECS and EKS is a real migration, not a setting",
+        "Start simple; you can always take on more of the host later"
+      ]
+    }
+  ]
+}
