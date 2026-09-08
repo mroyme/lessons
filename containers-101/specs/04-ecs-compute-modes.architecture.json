@@ -1,0 +1,318 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Who manages what: the five ECS compute modes",
+    "locale": "en",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    {
+      "id": "taskdef",
+      "type": "cloud",
+      "label": "One task definition",
+      "sublabel": "the same image and container config everywhere",
+      "pos": [
+        40,
+        230.0
+      ],
+      "size": [
+        260,
+        84
+      ]
+    },
+    {
+      "id": "express_task",
+      "type": "backend",
+      "label": "Express service",
+      "sublabel": "Fargate task behind a shared ALB",
+      "pos": [
+        620,
+        45
+      ],
+      "size": [
+        250,
+        62
+      ]
+    },
+    {
+      "id": "express_infra",
+      "type": "cloud",
+      "label": "AWS provisions the whole stack",
+      "sublabel": "VPC, ALB, ACM cert, Route 53 name, alarms",
+      "pos": [
+        930,
+        45
+      ],
+      "size": [
+        300,
+        62
+      ]
+    },
+    {
+      "id": "fargate_task",
+      "type": "backend",
+      "label": "Fargate task",
+      "sublabel": "own ENI, own microVM",
+      "pos": [
+        620,
+        143
+      ],
+      "size": [
+        250,
+        62
+      ]
+    },
+    {
+      "id": "fargate_infra",
+      "type": "cloud",
+      "label": "AWS owns host and kernel",
+      "sublabel": "no instance choice, no SSH, no GPU",
+      "pos": [
+        930,
+        143
+      ],
+      "size": [
+        300,
+        62
+      ]
+    },
+    {
+      "id": "mi_task",
+      "type": "backend",
+      "label": "Task on a Managed Instance",
+      "sublabel": "real EC2, bin-packed for cost",
+      "pos": [
+        620,
+        241
+      ],
+      "size": [
+        250,
+        62
+      ]
+    },
+    {
+      "id": "mi_infra",
+      "type": "cloud",
+      "label": "AWS provisions and patches EC2",
+      "sublabel": "instances replaced roughly every 14 days",
+      "pos": [
+        930,
+        241
+      ],
+      "size": [
+        300,
+        62
+      ]
+    },
+    {
+      "id": "ec2_task",
+      "type": "backend",
+      "label": "Task on your EC2",
+      "sublabel": "any instance type, any AMI",
+      "pos": [
+        620,
+        339
+      ],
+      "size": [
+        250,
+        62
+      ]
+    },
+    {
+      "id": "ec2_infra",
+      "type": "cloud",
+      "label": "You own the fleet",
+      "sublabel": "ASG, AMI, patching, capacity providers",
+      "pos": [
+        930,
+        339
+      ],
+      "size": [
+        300,
+        62
+      ]
+    },
+    {
+      "id": "ext_task",
+      "type": "backend",
+      "label": "Task on an external host",
+      "sublabel": "launchType: EXTERNAL",
+      "pos": [
+        620,
+        437
+      ],
+      "size": [
+        250,
+        62
+      ]
+    },
+    {
+      "id": "ext_infra",
+      "type": "external",
+      "label": "Your server, your network",
+      "sublabel": "SSM Agent + ECS Agent, no AWS ELB",
+      "pos": [
+        930,
+        437
+      ],
+      "size": [
+        300,
+        62
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "ECS Express Mode",
+      "wraps": [
+        "express_task",
+        "express_infra"
+      ],
+      "pad": 12
+    },
+    {
+      "kind": "region",
+      "label": "AWS Fargate",
+      "wraps": [
+        "fargate_task",
+        "fargate_infra"
+      ],
+      "pad": 12
+    },
+    {
+      "kind": "region",
+      "label": "ECS Managed Instances",
+      "wraps": [
+        "mi_task",
+        "mi_infra"
+      ],
+      "pad": 12
+    },
+    {
+      "kind": "region",
+      "label": "ECS on EC2 (self-managed)",
+      "wraps": [
+        "ec2_task",
+        "ec2_infra"
+      ],
+      "pad": 12
+    },
+    {
+      "kind": "region",
+      "label": "ECS Anywhere",
+      "wraps": [
+        "ext_task",
+        "ext_infra"
+      ],
+      "pad": 12
+    }
+  ],
+  "connections": [
+    {
+      "id": "taskdef-express",
+      "from": "taskdef",
+      "to": "express_task",
+      "label": "one API call",
+      "variant": "emphasis",
+      "labelSegment": 2
+    },
+    {
+      "id": "taskdef-fargate",
+      "from": "taskdef",
+      "to": "fargate_task",
+      "label": "launchType: FARGATE",
+      "variant": "emphasis",
+      "labelSegment": 2
+    },
+    {
+      "id": "taskdef-mi",
+      "from": "taskdef",
+      "to": "mi_task",
+      "label": "managed capacity provider",
+      "labelSegment": 2,
+      "labelDx": 80
+    },
+    {
+      "id": "taskdef-ec2",
+      "from": "taskdef",
+      "to": "ec2_task",
+      "label": "launchType: EC2",
+      "labelSegment": 2
+    },
+    {
+      "id": "taskdef-ext",
+      "from": "taskdef",
+      "to": "ext_task",
+      "label": "launchType: EXTERNAL",
+      "variant": "dashed",
+      "labelSegment": 2
+    },
+    {
+      "id": "express-runs-on",
+      "from": "express_infra",
+      "to": "express_task",
+      "label": "runs on"
+    },
+    {
+      "id": "fargate-runs-on",
+      "from": "fargate_infra",
+      "to": "fargate_task",
+      "label": "runs on"
+    },
+    {
+      "id": "mi-runs-on",
+      "from": "mi_infra",
+      "to": "mi_task",
+      "label": "runs on"
+    },
+    {
+      "id": "ec2-runs-on",
+      "from": "ec2_infra",
+      "to": "ec2_task",
+      "label": "runs on"
+    },
+    {
+      "id": "ext-runs-on",
+      "from": "ext_infra",
+      "to": "ext_task",
+      "label": "runs on"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "AWS manages everything",
+      "items": [
+        "aws ecs create-express-service - three required arguments",
+        "Gets you HTTPS, DNS, autoscaling and alarms for free",
+        "Pick it for: a normal web service you want live today",
+        "Serverless: declare CPU and memory, get an isolated microVM",
+        "No instance types, no SSH, no custom AMI, no GPU",
+        "Pick it for: bursty or low-ops workloads where you never want a host"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Shared responsibility",
+      "items": [
+        "Real EC2 that AWS provisions, patches and replaces (~14 days)",
+        "You still filter families: GPU, Arm, Spot",
+        "Pick it for: Fargate ergonomics with EC2 hardware and cost"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "You manage the host",
+      "items": [
+        "You own the ASG, the AMI, patching and capacity provider weights",
+        "The only mode with host access and custom kernels",
+        "Pick it for: special AMIs, daemons, or hardware you must control",
+        "EXTERNAL launch type on your own hardware via SSM + ECS agents",
+        "No AWS load balancer integration - you route traffic yourself",
+        "Pick it for: on-premises, edge, or data-residency requirements"
+      ]
+    }
+  ]
+}
