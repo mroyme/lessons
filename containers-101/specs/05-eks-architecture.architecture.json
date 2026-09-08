@@ -1,0 +1,300 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Amazon EKS: managed Kubernetes, your data plane",
+    "locale": "en",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    {
+      "id": "you",
+      "type": "external",
+      "label": "You",
+      "sublabel": "kubectl / Helm / GitOps",
+      "pos": [
+        40,
+        172
+      ],
+      "size": [
+        220,
+        64
+      ]
+    },
+    {
+      "id": "eks_api",
+      "type": "cloud",
+      "label": "EKS Control Plane",
+      "sublabel": "API server, scheduler, controllers",
+      "brand": "kubernetes",
+      "pos": [
+        330,
+        172
+      ],
+      "size": [
+        240,
+        64
+      ]
+    },
+    {
+      "id": "etcd",
+      "type": "database",
+      "label": "etcd",
+      "sublabel": "AWS-managed, multi-AZ, encrypted",
+      "pos": [
+        330,
+        304
+      ],
+      "size": [
+        240,
+        64
+      ]
+    },
+    {
+      "id": "karpenter",
+      "type": "backend",
+      "label": "Karpenter",
+      "sublabel": "just-in-time node provisioning",
+      "pos": [
+        650,
+        40
+      ],
+      "size": [
+        240,
+        64
+      ]
+    },
+    {
+      "id": "nodegroup",
+      "type": "backend",
+      "label": "Managed node group",
+      "sublabel": "EC2 + EKS-optimized AMI + kubelet",
+      "pos": [
+        650,
+        172
+      ],
+      "size": [
+        240,
+        64
+      ]
+    },
+    {
+      "id": "auto_mode",
+      "type": "backend",
+      "label": "EKS Auto Mode",
+      "sublabel": "AWS-managed nodes, compute and add-ons",
+      "pos": [
+        970,
+        436
+      ],
+      "size": [
+        240,
+        64
+      ]
+    },
+    {
+      "id": "cni",
+      "type": "cloud",
+      "label": "Amazon VPC CNI",
+      "sublabel": "each pod gets a real VPC IP",
+      "pos": [
+        970,
+        304
+      ],
+      "size": [
+        240,
+        64
+      ]
+    },
+    {
+      "id": "pods",
+      "type": "backend",
+      "label": "Pods",
+      "sublabel": "your workloads",
+      "pos": [
+        650,
+        436
+      ],
+      "size": [
+        240,
+        72
+      ]
+    },
+    {
+      "id": "lb",
+      "type": "cloud",
+      "label": "ALB / NLB",
+      "sublabel": "AWS Load Balancer Controller, IP mode",
+      "pos": [
+        650,
+        568
+      ],
+      "size": [
+        240,
+        64
+      ]
+    },
+    {
+      "id": "identity",
+      "type": "security",
+      "label": "IRSA / EKS Pod Identity",
+      "sublabel": "scoped AWS credentials per pod",
+      "pos": [
+        330,
+        436
+      ],
+      "size": [
+        220,
+        64
+      ]
+    },
+    {
+      "id": "ecr",
+      "type": "cloud",
+      "label": "Amazon ECR",
+      "sublabel": "container images",
+      "pos": [
+        330,
+        568
+      ],
+      "size": [
+        220,
+        64
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "AWS-managed account (you never see these)",
+      "wraps": [
+        "eks_api",
+        "etcd"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "Your VPC - the data plane you operate",
+      "wraps": [
+        "nodegroup",
+        "karpenter",
+        "auto_mode",
+        "pods",
+        "cni",
+        "lb"
+      ]
+    },
+    {
+      "kind": "security-group",
+      "label": "Pod-level AWS access",
+      "wraps": [
+        "identity",
+        "pods"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "you-to-api",
+      "from": "you",
+      "to": "eks_api",
+      "label": "kubectl apply - Kubernetes API, IAM-authenticated",
+      "variant": "emphasis",
+      "labelDy": -66
+    },
+    {
+      "id": "api-to-etcd",
+      "from": "eks_api",
+      "to": "etcd",
+      "label": "cluster state",
+      "labelDy": 62
+    },
+    {
+      "id": "api-to-nodegroup",
+      "from": "eks_api",
+      "to": "nodegroup",
+      "label": "binds pods to kubelet",
+      "variant": "emphasis",
+      "labelDy": 85
+    },
+    {
+      "id": "karpenter-to-api",
+      "from": "karpenter",
+      "to": "eks_api",
+      "label": "watches unschedulable pods, launches nodes",
+      "variant": "dashed"
+    },
+    {
+      "id": "nodegroup-to-pods",
+      "from": "nodegroup",
+      "to": "pods",
+      "label": "runs",
+      "variant": "emphasis",
+      "labelDy": 113
+    },
+    {
+      "id": "automode-to-pods",
+      "from": "auto_mode",
+      "to": "pods",
+      "label": "AWS provisions and manages nodes",
+      "variant": "dashed",
+      "labelDy": 84
+    },
+    {
+      "id": "cni-to-pods",
+      "from": "cni",
+      "to": "pods",
+      "label": "assigns VPC IP via ENI"
+    },
+    {
+      "id": "identity-to-pods",
+      "from": "identity",
+      "to": "pods",
+      "label": "temporary credentials",
+      "variant": "security",
+      "labelDy": -62
+    },
+    {
+      "id": "ecr-to-pods",
+      "from": "ecr",
+      "to": "pods",
+      "label": "image pull",
+      "variant": "dashed"
+    },
+    {
+      "id": "lb-to-pods",
+      "from": "lb",
+      "to": "pods",
+      "label": "Ingress to pod IPs"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "The split that defines EKS",
+      "items": [
+        "AWS runs the control plane in its own account across AZs",
+        "You run every node, add-on and CNI in your VPC",
+        "An EKS cluster costs $0.10 per hour before any nodes"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Pods are first-class VPC citizens",
+      "items": [
+        "The VPC CNI gives each pod a routable VPC IP address",
+        "Security groups and NACLs apply to pods, not just nodes",
+        "Load balancers target pod IPs directly, skipping node ports"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "ECS or EKS?",
+      "items": [
+        "EKS if you need Kubernetes APIs, CRDs, operators or portability",
+        "ECS if you want a smaller surface and fewer moving parts",
+        "EKS gives you an ecosystem; it also gives you upgrades to run"
+      ]
+    }
+  ]
+}
