@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Docker: how a container actually runs",
+    "locale": "en",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    { "id": "registry", "type": "cloud", "label": "Registry", "sublabel": "Docker Hub / ECR", "tag": "docker pull / push", "pos": [30, 150], "size": [170, 70] },
+    { "id": "images", "type": "database", "label": "Local image store", "sublabel": "read-only layers", "pos": [410, 150], "size": [170, 64] },
+    { "id": "net", "type": "cloud", "label": "Docker network", "sublabel": "bridge + ports", "pos": [1060, 150], "size": [190, 64] },
+
+    { "id": "dev", "type": "external", "label": "Developer", "sublabel": "types docker run", "pos": [30, 340], "size": [150, 64] },
+    { "id": "cli", "type": "frontend", "label": "docker CLI", "sublabel": "a REST client", "brand": "docker", "pos": [225, 340], "size": [160, 64] },
+    { "id": "daemon", "type": "backend", "label": "dockerd", "sublabel": "Engine API server", "tag": "/var/run/docker.sock", "pos": [410, 340], "size": [170, 70] },
+    { "id": "containerd", "type": "backend", "label": "containerd", "sublabel": "container lifecycle", "pos": [625, 340], "size": [170, 64] },
+    { "id": "runc", "type": "backend", "label": "runc", "sublabel": "execs PID 1", "pos": [840, 340], "size": [150, 64] },
+    { "id": "container", "type": "backend", "label": "Running container", "sublabel": "PID 1 + writable layer", "pos": [1060, 340], "size": [190, 70] },
+
+    { "id": "volume", "type": "database", "label": "Volume / bind mount", "sublabel": "outlives the container", "pos": [800, 600], "size": [200, 64] },
+    { "id": "kernel", "type": "security", "label": "Host Linux kernel", "sublabel": "namespaces, cgroups", "pos": [1060, 600], "size": [190, 64] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "One host machine (laptop or EC2 instance)", "wraps": ["cli", "daemon", "containerd", "runc", "images", "container", "kernel", "volume", "net"] },
+    { "kind": "security-group", "label": "Kernel-enforced isolation", "wraps": ["container", "kernel"] }
+  ],
+  "connections": [
+    { "id": "dev-runs", "from": "dev", "to": "cli", "label": "docker run -p 8080:80 app:1.0", "variant": "emphasis", "labelDy": -50 },
+    { "id": "cli-socket", "from": "cli", "to": "daemon", "label": "HTTP over the unix socket", "variant": "emphasis", "labelDy": -50 },
+    { "id": "pull-layers", "from": "registry", "to": "images", "label": "dockerd pulls missing layers", "variant": "dashed" },
+    { "id": "resolve-layers", "from": "daemon", "to": "images", "label": "resolve image layers" },
+    { "id": "create-task", "from": "daemon", "to": "containerd", "label": "create task", "variant": "emphasis", "labelDy": -50 },
+    { "id": "oci-bundle", "from": "containerd", "to": "runc", "label": "OCI bundle", "variant": "emphasis", "labelDy": -50 },
+    { "id": "exec-pid1", "from": "runc", "to": "container", "label": "exec PID 1", "variant": "emphasis", "labelDy": -50 },
+    { "id": "publish-port", "from": "container", "to": "net", "label": "publish 8080 -> 80", "labelDy": -40 },
+    { "id": "isolation", "from": "container", "to": "kernel", "label": "namespaces + cgroups", "variant": "security", "fromSide": "bottom", "toSide": "top", "labelDy": 160 },
+    { "id": "mount-volume", "from": "container", "to": "volume", "label": "mount", "fromSide": "bottom", "toSide": "top" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Image vs container",
+      "items": [
+        "An image is a stack of read-only layers built from a Dockerfile",
+        "A container is those layers plus one thin writable layer and one process",
+        "Delete the container and the writable layer goes with it"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "The client is not the engine",
+      "items": [
+        "docker CLI only sends REST calls to dockerd over a unix socket",
+        "dockerd delegates to containerd, which calls runc to exec PID 1",
+        "Remember this: ECS and Kubernetes replace the client, not the runtime"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Isolation, not virtualization",
+      "items": [
+        "Namespaces decide what the process can see",
+        "cgroups and seccomp decide how much it gets and what it may call",
+        "No guest OS - every container shares the host kernel"
+      ]
+    }
+  ]
+}
