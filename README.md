@@ -31,22 +31,8 @@ Start at [`containers-101/index.html`](containers-101/v1/index.html), or read th
 
 ## How to view
 
-The site is published to GitHub Pages from `main`. A custom domain is configured in
-the repository's Pages settings: **<http://lessons.mroy.me/>**
-
-> **DNS is not yet pointing at GitHub.** `lessons.mroy.me` currently returns NXDOMAIN,
-> and because the custom domain is set, `mroyme.github.io/lessons/` 301-redirects to
-> it — so the site is unreachable until the record exists. In the DNS provider for
-> `mroy.me` (currently Cloudflare), add:
->
-> ```
-> lessons   CNAME   mroyme.github.io
-> ```
->
-> Keep the record **DNS-only** rather than proxied, so GitHub can complete its TLS
-> challenge; then enable **Enforce HTTPS** in Settings → Pages once the certificate is
-> issued. Removing the custom domain in Settings → Pages instead restores
-> `https://mroyme.github.io/lessons/`.
+The site is live at **<https://lessons.mroy.me/>**, published to GitHub Pages from
+`main` and served over HTTPS.
 
 To work with it locally:
 
@@ -79,9 +65,10 @@ relative link left behind when a course is copied into a new version folder. Gen
 diagram artifacts are skipped, since their inline scripts contain href-like strings
 that are not navigable links.
 
-**Repository setting:** **Settings → Pages → Source** must be **GitHub Actions**
-(already configured for this repository). A fork will need to set it before the deploy
-step can succeed.
+**Repository settings:** **Settings → Pages → Source** is **GitHub Actions**, with the
+custom domain `lessons.mroy.me` (a DNS-only `CNAME` to `mroyme.github.io`, not proxied)
+and **Enforce HTTPS** enabled. A fork will need its own values before the deploy step
+can succeed.
 
 ## Repository layout
 
