@@ -1,0 +1,291 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Amazon ECS: one control plane, five places to run",
+    "locale": "en",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    {
+      "id": "you",
+      "type": "external",
+      "label": "You",
+      "sublabel": "AWS CLI / CDK / Terraform",
+      "pos": [
+        50,
+        0
+      ],
+      "size": [
+        240,
+        64
+      ]
+    },
+    {
+      "id": "control_plane",
+      "type": "cloud",
+      "label": "ECS API + Scheduler",
+      "sublabel": "AWS-managed, no cost",
+      "tag": "RegisterTaskDefinition",
+      "pos": [
+        50,
+        140
+      ],
+      "size": [
+        240,
+        82
+      ]
+    },
+    {
+      "id": "taskdef",
+      "type": "cloud",
+      "label": "Task definition",
+      "sublabel": "image, CPU/memory, IAM roles, logging",
+      "pos": [
+        567,
+        143
+      ],
+      "size": [
+        250,
+        76
+      ]
+    },
+    {
+      "id": "ecr",
+      "type": "cloud",
+      "label": "Amazon ECR",
+      "sublabel": "container images",
+      "pos": [
+        50,
+        289
+      ],
+      "size": [
+        250,
+        68
+      ]
+    },
+    {
+      "id": "alb",
+      "type": "cloud",
+      "label": "Application Load Balancer",
+      "sublabel": "target group per service",
+      "pos": [
+        1050,
+        285
+      ],
+      "size": [
+        250,
+        76
+      ]
+    },
+    {
+      "id": "service",
+      "type": "cloud",
+      "label": "ECS Service",
+      "sublabel": "desired count, rollout, autoscaling",
+      "tag": "CreateService",
+      "pos": [
+        572,
+        282
+      ],
+      "size": [
+        240,
+        82
+      ]
+    },
+    {
+      "id": "express",
+      "type": "backend",
+      "label": "ECS Express Mode",
+      "sublabel": "one API call, opinionated defaults",
+      "pos": [
+        45,
+        420
+      ],
+      "size": [
+        250,
+        66
+      ]
+    },
+    {
+      "id": "fargate",
+      "type": "backend",
+      "label": "AWS Fargate",
+      "sublabel": "serverless tasks",
+      "pos": [
+        345,
+        496
+      ],
+      "size": [
+        250,
+        66
+      ]
+    },
+    {
+      "id": "managed_instances",
+      "type": "backend",
+      "label": "ECS Managed Instances",
+      "sublabel": "AWS-operated EC2 fleet",
+      "pos": [
+        785,
+        496
+      ],
+      "size": [
+        250,
+        66
+      ]
+    },
+    {
+      "id": "ec2",
+      "type": "backend",
+      "label": "ECS on EC2",
+      "sublabel": "your ASG, your AMI",
+      "pos": [
+        1050,
+        420
+      ],
+      "size": [
+        250,
+        66
+      ]
+    },
+    {
+      "id": "anywhere",
+      "type": "external",
+      "label": "ECS Anywhere",
+      "sublabel": "your servers, on-premises",
+      "tag": "SSM Agent + ECS Agent",
+      "pos": [
+        567,
+        630
+      ],
+      "size": [
+        250,
+        80
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "AWS Region (us-east-1)",
+      "wraps": [
+        "control_plane",
+        "taskdef",
+        "service",
+        "ecr",
+        "alb",
+        "express",
+        "fargate",
+        "managed_instances",
+        "ec2"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "you-to-control-plane",
+      "from": "you",
+      "to": "control_plane",
+      "label": "RegisterTaskDefinition / CreateService",
+      "variant": "emphasis",
+      "labelDy": 36
+    },
+    {
+      "id": "control-plane-to-taskdef",
+      "from": "control_plane",
+      "to": "taskdef",
+      "label": "stores the immutable revision"
+    },
+    {
+      "id": "taskdef-to-service",
+      "from": "taskdef",
+      "to": "service",
+      "label": "service runs N copies of one revision",
+      "variant": "emphasis",
+      "labelDy": 44
+    },
+    {
+      "id": "ecr-to-service",
+      "from": "ecr",
+      "to": "service",
+      "label": "image pulled at task launch",
+      "variant": "dashed"
+    },
+    {
+      "id": "alb-to-service",
+      "from": "alb",
+      "to": "service",
+      "label": "routes to task ENIs"
+    },
+    {
+      "id": "service-to-express",
+      "from": "service",
+      "to": "express",
+      "label": "createExpressService",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "service-to-fargate",
+      "from": "service",
+      "to": "fargate",
+      "label": "launchType: FARGATE",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "service-to-managed-instances",
+      "from": "service",
+      "to": "managed_instances",
+      "label": "capacity provider: managed instances",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "service-to-ec2",
+      "from": "service",
+      "to": "ec2",
+      "label": "launchType: EC2",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "service-to-anywhere",
+      "from": "service",
+      "to": "anywhere",
+      "label": "launchType: EXTERNAL",
+      "variant": "dashed",
+      "labelDy": 146
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "The control plane is free",
+      "items": [
+        "The ECS API and scheduler cost nothing",
+        "You pay only for the compute your tasks land on",
+        "That is the whole pricing model - no cluster fee"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "One task definition, five destinations",
+      "items": [
+        "The same revision can target FARGATE, EC2 or EXTERNAL",
+        "Express Mode wraps the whole thing in a single call",
+        "Managed Instances is chosen by capacity provider, not launch type"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Where the agent lives",
+      "items": [
+        "EC2, Managed Instances and external hosts run the ECS Agent",
+        "Fargate and Express Mode hide the agent completely",
+        "No agent visible means no host for you to operate"
+      ]
+    }
+  ]
+}
