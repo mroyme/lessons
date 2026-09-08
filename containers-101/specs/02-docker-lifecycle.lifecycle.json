@@ -1,0 +1,230 @@
+{
+  "schema_version": 1,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "Docker: from Dockerfile to a dead container",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1080,
+      630
+    ]
+  },
+  "lanes": [
+    {
+      "id": "main",
+      "label": "Image supply -> container states"
+    },
+    {
+      "id": "trouble",
+      "label": "Interruptions"
+    },
+    {
+      "id": "terminal",
+      "label": "Removal"
+    }
+  ],
+  "states": [
+    {
+      "id": "dockerfile",
+      "type": "start",
+      "label": "Dockerfile",
+      "lane": "main",
+      "col": 0,
+      "step": "01"
+    },
+    {
+      "id": "image",
+      "type": "active",
+      "label": "Image built",
+      "sublabel": "docker build -t app:1.0 .",
+      "lane": "main",
+      "col": 1,
+      "step": "02"
+    },
+    {
+      "id": "created",
+      "type": "active",
+      "label": "Created",
+      "sublabel": "filesystem ready, no process yet",
+      "lane": "main",
+      "col": 2,
+      "step": "03",
+      "width": 143,
+      "yOffset": 24
+    },
+    {
+      "id": "running",
+      "type": "active",
+      "label": "Running",
+      "sublabel": "PID 1 alive",
+      "lane": "main",
+      "col": 3,
+      "step": "04"
+    },
+    {
+      "id": "exited",
+      "type": "neutral",
+      "label": "Exited",
+      "sublabel": "writable layer still on disk",
+      "lane": "main",
+      "col": 4,
+      "step": "05",
+      "width": 126
+    },
+    {
+      "id": "paused",
+      "type": "waiting",
+      "label": "Paused",
+      "sublabel": "cgroup freezer, memory retained",
+      "lane": "trouble",
+      "col": 1,
+      "width": 139
+    },
+    {
+      "id": "oomkilled",
+      "type": "failure",
+      "label": "OOMKilled",
+      "sublabel": "exceeded the memory limit",
+      "lane": "trouble",
+      "col": 2
+    },
+    {
+      "id": "removed",
+      "type": "success",
+      "label": "Removed",
+      "sublabel": "writable layer deleted",
+      "lane": "terminal",
+      "col": 2
+    }
+  ],
+  "transitions": [
+    {
+      "id": "build",
+      "from": "dockerfile",
+      "to": "image",
+      "label": "docker build",
+      "labelDy": 56
+    },
+    {
+      "id": "create",
+      "from": "image",
+      "to": "created",
+      "label": "docker create / docker run",
+      "labelDy": 78,
+      "labelDx": -35
+    },
+    {
+      "id": "start",
+      "from": "created",
+      "to": "running",
+      "label": "start: exec PID 1",
+      "labelDy": -46
+    },
+    {
+      "id": "pause",
+      "from": "running",
+      "to": "paused",
+      "label": "docker pause (SIGSTOP via freezer)",
+      "labelDx": -100,
+      "labelDy": 83
+    },
+    {
+      "id": "unpause",
+      "from": "paused",
+      "to": "running",
+      "label": "docker unpause",
+      "labelDx": -67,
+      "labelDy": -37
+    },
+    {
+      "id": "stop",
+      "from": "running",
+      "to": "exited",
+      "label": "docker stop: SIGTERM, SIGKILL after 10s",
+      "labelDx": 69,
+      "labelDy": -34,
+      "route": "straight"
+    },
+    {
+      "id": "restart",
+      "from": "exited",
+      "to": "running",
+      "label": "docker start (same writable layer)",
+      "fromSide": "right",
+      "toSide": "top",
+      "via": [
+        [
+          810,
+          157
+        ],
+        [
+          810,
+          88
+        ],
+        [
+          556,
+          88
+        ]
+      ],
+      "labelSegment": 2
+    },
+    {
+      "id": "oom",
+      "from": "running",
+      "to": "oomkilled",
+      "label": "memory limit exceeded",
+      "variant": "security",
+      "labelDx": 71,
+      "labelDy": -4
+    },
+    {
+      "id": "oom-recover",
+      "from": "oomkilled",
+      "to": "running",
+      "label": "restart policy: on-failure / always",
+      "variant": "emphasis",
+      "labelDx": 106,
+      "labelDy": 22
+    },
+    {
+      "id": "remove",
+      "from": "exited",
+      "to": "removed",
+      "label": "docker rm",
+      "route": "right-channel",
+      "fromSide": "right",
+      "toSide": "right",
+      "channelX": 880
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Exited is not deleted",
+      "items": [
+        "An exited container still owns its writable layer and its logs",
+        "docker start reuses it; docker rm is what frees the disk",
+        "This is why docker ps -a shows a graveyard"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Stopping is a negotiation",
+      "items": [
+        "SIGTERM first, then SIGKILL after the grace period",
+        "PID 1 must actually handle SIGTERM or you always get killed",
+        "ECS and Kubernetes use the same contract, with their own timeouts"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Why orchestrators exist",
+      "items": [
+        "Restart policies fix one host; they do not move work to another host",
+        "Nothing here knows about load balancers, rollouts, or capacity",
+        "That gap is exactly what ECS and EKS fill"
+      ]
+    }
+  ]
+}
