@@ -65,8 +65,9 @@ relative link left behind when a course is copied into a new version folder. Gen
 diagram artifacts are skipped, since their inline scripts contain href-like strings
 that are not navigable links.
 
-**One-time setup:** in **Settings → Pages**, set **Source** to **GitHub Actions**.
-Until that is done the workflow will run but the deploy step will fail.
+**Repository setting:** **Settings → Pages → Source** must be **GitHub Actions**
+(already configured for this repository). A fork will need to set it before the deploy
+step can succeed.
 
 ## Repository layout
 
